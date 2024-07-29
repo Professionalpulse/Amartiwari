@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+// Function to convert letter grades to grade points
+double convertGradeToPoints(char grade) {
+    switch (grade) {
+        case 'A':
+            return 4.0;
+        case 'B':
+            return 3.0;
+        case 'C':
+            return 2.0;
+        case 'D':
+            return 1.0;
+        case 'F':
+            return 0.0;
+        default:
+            cout << "Invalid grade entered. Please enter A, B, C, D, or F." << endl;
+            return -1.0; // Indicate an error
+    }
+}
+
+int main() {
+    int numSemesters;
+
+    cout << "Enter the number of semesters: ";
+    cin >> numSemesters;
+
+    vector<vector<double>> semesterData(numSemesters); // Stores {credit, grade} pairs
+
+    for (int i = 0; i < numSemesters; i++) {
+        int numSubjects;
+
+        cout << "\nEnter the number of subjects in semester " << i + 1 << ": ";
+        cin >> numSubjects;
+
+        semesterData[i].resize(numSubjects * 2); // Allocate space for credit & grade
+
+        for (int j = 0; j < numSubjects; j++) {
+            double credit;
+            char grade;
+
+            cout << "Enter credit for subject " << j + 1 << ": ";
+            cin >> credit;
+
+            cout << "Enter grade (A, B, C, D, or F) for subject " << j + 1 << ": ";
+            cin >> grade;
+
+            semesterData[i][j * 2] = credit;
+            semesterData[i][j * 2 + 1] = convertGradeToPoints(grade);
+        }
+    }
+
+    double totalCredits = 0.0, totalGradePoints = 0.0;
+
+    for (int i = 0; i < numSemesters; i++) {
+        for (int j = 0; j < semesterData[i].size(); j += 2) {
+            totalCredits += semesterData[i][j];
+            totalGradePoints += semesterData[i][j] * semesterData[i][j + 1];
+        }
+    }
+
+    if (totalCredits == 0.0) {
+        cout << "CGPA cannot be calculated as no credits were entered." << endl;
+    } else {
+        double cgpa = totalGradePoints / totalCredits;
+        cout << fixed << setprecision(2); // Set output formatting for CGPA
+        cout << "CGPA: " << cgpa << endl;
+    }
+
+    return 0;
+}
