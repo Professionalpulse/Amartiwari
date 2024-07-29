@@ -1,0 +1,97 @@
+#include <iostream>
+using namespace std;
+
+// Function prototypes
+bool solveSudoku(int grid[9][9]);
+bool findEmptyLocation(int grid[9][9], int &row, int &col);
+bool isSafe(int grid[9][9], int row, int col, int num);
+void printGrid(int grid[9][9]);
+
+// Driver code
+int main() {
+    int grid[9][9] = {
+        {5, 3, 0, 0, 7, 0, 0, 0, 0},
+        {6, 0, 0, 1, 9, 5, 0, 0, 0},
+        {0, 9, 8, 0, 0, 0, 0, 6, 0},
+        {8, 0, 0, 0, 6, 0, 0, 0, 3},
+        {4, 0, 0, 8, 0, 3, 0, 0, 1},
+        {7, 0, 0, 0, 2, 0, 0, 0, 6},
+        {0, 6, 0, 0, 0, 0, 2, 8, 0},
+        {0, 0, 0, 4, 1, 9, 0, 0, 5},
+        {0, 0, 0, 0, 8, 0, 0, 7, 9}
+    };
+
+    cout << "Sudoku grid before solving:" << endl;
+    printGrid(grid);
+    cout << endl;
+
+    if (solveSudoku(grid)) {
+        cout << "Sudoku grid after solving:" << endl;
+        printGrid(grid);
+    } else {
+        cout << "No solution exists." << endl;
+    }
+
+    return 0;
+}
+
+// Function to solve the Sudoku puzzle using recursion and backtracking
+bool solveSudoku(int grid[9][9]) {
+    int row, col;
+
+    // Check if there are any empty cells left
+    if (!findEmptyLocation(grid, row, col))
+        return true; // Puzzle solved successfully
+
+    // Try filling the grid with digits 1 to 9
+    for (int num = 1; num <= 9; num++) {
+        // Check if placing the number num in the current position is safe
+        if (isSafe(grid, row, col, num)) {
+            // Assign num to the current position
+            grid[row][col] = num;
+
+            // Recursively solve the rest of the grid
+            if (solveSudoku(grid))
+                return true; // If successful, return true
+
+            // If placing num leads to an invalid solution, backtrack
+            grid[row][col] = 0; // Undo the assignment
+        }
+    }
+
+    return false; // Trigger backtracking
+}
+
+// Function to find an empty location in the grid
+bool findEmptyLocation(int grid[9][9], int &row, int &col) {
+    for (row = 0; row < 9; row++) {
+        for (col = 0; col < 9; col++) {
+            if (grid[row][col] == 0) {
+                return true; // Found an empty location
+            }
+        }
+    }
+    return false; // No empty location found
+}
+
+// Function to check if it's safe to place num in the given position
+bool isSafe(int grid[9][9], int row, int col, int num) {
+    // Check if num is not already present in the current row, column and 3x3 subgrid
+    for (int i = 0; i < 9; i++) {
+        if (grid[row][i] == num || grid[i][col] == num ||
+            grid[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == num) {
+            return false; // Not safe
+        }
+    }
+    return true; // Safe
+}
+
+// Function to print the Sudoku grid
+void printGrid(int grid[9][9]) {
+    for (int row = 0; row < 9; row++) {
+        for (int col = 0; col < 9; col++) {
+            cout << grid[row][col] << " ";
+        }
+        cout << endl;
+    }
+}
